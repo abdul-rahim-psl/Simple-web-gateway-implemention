@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Default receiver endpoint - this can be made configurable too
-    const receiverEndpoint = 'http://localhost:3002/api/process';
+    const receiverEndpoint = 'https://streaming-sxs4.vercel.app/api/process';
 
     // Forward the text to the receiver
     const response = await fetch(receiverEndpoint, {
