@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger, getRequestId, resetRequestId } from '@/utils/logger';
 
 /**
  * API route to forward a string to another project or endpoint
@@ -7,12 +8,19 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Generate a new request ID for this operation
+    resetRequestId();
+    const requestId = getRequestId();
+    
     // Parse the request body
     const body = await request.json();
     const { text, destination } = body;
 
-    console.log("1. sender SENDING text:", text);
-    console.log(" ")
+    // Log the request
+    await logger.info(`Received forward request with text: "${text}"`, { 
+      destination, 
+      textLength: text?.length 
+    });
 
     // Validate required parameters
     if (!text) {
@@ -29,29 +37,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Log the forward operation
+    await logger.debug(`Forwarding text to ${destination}`);
+
     // Forward the string to the specified destination
     const response = await fetch(destination, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Request-ID': getRequestId(), // Pass the request ID to the next service
       },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ 
+        text,
+        requestId: getRequestId() // Include request ID in the payload too for older systems
+      }),
     });
-
-    // Forward the string to the specified destination
-    const responseFromLogger = await fetch('http://localhost:3003/api/log', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text }),
-    });
-
     
+    await logger.debug(`Received response with status: ${response.status}`);
 
     // Check if the forward request was successful
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      
+      // Log the error
+      await logger.error(`Failed to forward text to destination`, { 
+        statusCode: response.status, 
+        error: errorData 
+      });
+      
       return NextResponse.json(
         {
           error: 'Failed to forward string to destination',
@@ -64,13 +77,22 @@ export async function POST(request: NextRequest) {
 
     // Return the response from the destination
     const responseData = await response.json();
-    console.log("Response from destination:", responseData);
-    console.log(" ")
+    
+    // Log the successful response
+    await logger.info(`Successfully processed text, received response from destination`, { 
+      originalText: text,
+      processedResult: responseData.processed || responseData.result,
+    });
 
     return NextResponse.json(responseData);
 
   } catch (error) {
-    console.error('Error forwarding string:', error);
+    // Log the error
+    await logger.error('Error processing forward request', { 
+      error: (error as Error).message,
+      stack: (error as Error).stack
+    });
+    
     return NextResponse.json(
       { error: 'Failed to process request', details: (error as Error).message },
       { status: 500 }

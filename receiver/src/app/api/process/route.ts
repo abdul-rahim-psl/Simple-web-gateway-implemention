@@ -1,18 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger, setRequestId, getRequestId } from '@/utils/logger';
 
 /**
  * API route to reverse a string
  * POST /api/process
- * Body: { text: string }
+ * Body: { text: string, requestId?: string }
  */
 export async function POST(request: NextRequest) {
   try {
+    // Get requestId from header or generate a new one if not present
+    const requestIdHeader = request.headers.get('X-Request-ID');
+    if (requestIdHeader) {
+      setRequestId(requestIdHeader);
+    }
+    
     // Parse the request body
     const body = await request.json();
-    const { text } = body;
-
-    console.log("Receiver received text:", text);
-    console.log(" ");
+    const { text, requestId: bodyRequestId } = body;
+    
+    // If requestId is in the body but not in the header, use that one
+    if (bodyRequestId && !requestIdHeader) {
+      setRequestId(bodyRequestId);
+    }
+    
+    await logger.info(`Receiver received text: "${text}"`, { textLength: text?.length });
 
 
     // Validate required parameter
@@ -25,9 +36,11 @@ export async function POST(request: NextRequest) {
 
     // Reverse the string
     const reversedText = text.split('').reverse().join('');
-    console.log("Receiver Reversed text sending back to middleware:", reversedText);
-    console.log(" ");
-
+    
+    await logger.info(`Successfully reversed text`, { 
+      originalText: text,
+      reversedText: reversedText
+    });
 
     // Return the reversed string
     return NextResponse.json({
@@ -35,7 +48,11 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error reversing text:', error);
+    await logger.error('Error processing text in receiver', { 
+      error: (error as Error).message,
+      stack: (error as Error).stack
+    });
+    
     return NextResponse.json(
       { error: 'Failed to process text', details: (error as Error).message },
       { status: 500 }
