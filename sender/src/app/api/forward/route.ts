@@ -74,16 +74,17 @@ export async function POST(request: NextRequest) {
     
     // Log the successful response
     await logger.info(`Successfully processed text, received response from destination`, { 
-      originalText: text,
-      processedResult: responseData.processed || responseData.result,
+      text: text,
+      result: responseData.processed || responseData.result
     });
+
 
     return NextResponse.json(responseData);
 
   } catch (error) {
     // Log the error
     await logger.error('Error processing forward request', { 
-      error: (error as Error).message,
+      message: (error as Error).message,
       stack: (error as Error).stack
     });
     

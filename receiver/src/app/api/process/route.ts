@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { text } = body;
     
-    await logger.info(`Receiver received text: "${text}"`, { textLength: text?.length });
 
 
     // Validate required parameter

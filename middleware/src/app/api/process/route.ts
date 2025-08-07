@@ -11,9 +11,6 @@ export async function POST(request: NextRequest) {
     // Parse the request body
     const body = await request.json();
     const { text } = body;
-    
-    await logger.info(`Middleware received text: "${text}"`, { textLength: text?.length });
-
 
     // Validate required parameter
     if (!text) {
@@ -45,11 +42,6 @@ export async function POST(request: NextRequest) {
     // Check if the forward request was successful
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      
-      await logger.error(`Failed to forward text to receiver`, { 
-        statusCode: response.status,
-        error: errorData
-      });
       
       return NextResponse.json(
         {

@@ -6,21 +6,20 @@ type LogLevel = "info" | "warn" | "error" | "debug";
 
 /**
  * Send a log entry to the centralized logging service
- *
+ * 
  * @param level - Log level (info, warn, error, debug)
  * @param message - Log message
  * @param metadata - Optional metadata to include with the log
  */
-export async function log(level: LogLevel, message: string): Promise<void> {
+export async function log(level: LogLevel, message: string, metadata?: any): Promise<void> {
   try {
     const logEntry = {
       service: "middleware", // Service name
       level,
       message,
       timestamp: new Date().toISOString(),
-    };
-
-    // Send log to the logging service
+      metadata
+    };    // Send log to the logging service
     await fetch(LOGGING_SERVICE_URL, {
       method: "POST",
       headers: {
@@ -39,8 +38,8 @@ export async function log(level: LogLevel, message: string): Promise<void> {
 
 // Helper methods for different log levels
 export const logger = {
-  info: (message: string) => log("info", message),
-  warn: (message: string) => log("warn", message),
-  error: (message: string) => log("error", message),
-  debug: (message: string) => log("debug", message),
+  info: (message: string, metadata?: any) => log('info', message, metadata),
+  warn: (message: string, metadata?: any) => log('warn', message, metadata),
+  error: (message: string, metadata?: any) => log('error', message, metadata),
+  debug: (message: string, metadata?: any) => log('debug', message, metadata),
 };

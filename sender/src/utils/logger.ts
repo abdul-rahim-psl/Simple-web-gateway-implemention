@@ -14,6 +14,7 @@ type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 export async function log(
   level: LogLevel, 
   message: string, 
+  metadata?: any
 ): Promise<void> {
   try {
     const logEntry = {
@@ -21,7 +22,7 @@ export async function log(
       level,
       message,
       timestamp: new Date().toISOString(),
-      
+      metadata
     };
 
     // Send log to the logging service
@@ -41,8 +42,8 @@ export async function log(
 
 // Helper methods for different log levels
 export const logger = {
-  info: (message: string) => log('info', message ),
-  warn: (message: string) => log('warn', message ),
-  error: (message: string) => log('error', message ),
-  debug: (message: string) => log('debug', message),
+  info: (message: string, metadata?: any) => log('info', message, metadata),
+  warn: (message: string, metadata?: any) => log('warn', message, metadata),
+  error: (message: string, metadata?: any) => log('error', message, metadata),
+  debug: (message: string, metadata?: any) => log('debug', message, metadata),
 };

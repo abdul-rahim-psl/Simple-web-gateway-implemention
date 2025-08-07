@@ -151,7 +151,6 @@ export default function Home() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">{log.message}</td>
-                    <td className="px-4 py-3 text-xs font-mono text-gray-500">{log.requestId || '-'}</td>
                   </tr>
                 ))}
               </tbody>
