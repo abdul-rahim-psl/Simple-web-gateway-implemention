@@ -6,7 +6,6 @@ interface LogEntry {
   level: 'info' | 'warn' | 'error' | 'debug';
   message: string;
   timestamp: string;
-  metadata?: any;
 }
 
 // In-memory log storage

@@ -7,8 +7,6 @@ interface LogEntry {
   level: string;
   message: string;
   timestamp: string;
-  requestId?: string;
-  metadata?: any;
 }
 
 export default function Home() {
