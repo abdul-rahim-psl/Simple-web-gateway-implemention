@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { text, destination } = body;
 
-    console.log("text:", text);
-    console.log("destination:", destination);
+    console.log("1. sender text:", text);
+    console.log("1. sender destination:", destination);
 
     // Validate required parameters
     if (!text) {

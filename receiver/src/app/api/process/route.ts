@@ -11,6 +11,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { text } = body;
 
+    console.log("Receiver received text:", text);
+
     // Validate required parameter
     if (!text) {
       return NextResponse.json(
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Reverse the string
     const reversedText = text.split('').reverse().join('');
+    console.log("Receiver Reversed text sending back to middleware:", reversedText);
 
     // Return the reversed string
     return NextResponse.json({

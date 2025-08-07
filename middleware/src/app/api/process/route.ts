@@ -20,7 +20,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Default receiver endpoint - this can be made configurable too
-    const receiverEndpoint = 'https://streaming-sxs4.vercel.app/api/process';
+    const environment = process.env.enviroment || 'production';
+    const receiverEndpoint = environment === 'development'
+      ? 'http://localhost:3002/api/process'
+      : 'https://streaming-sxs4.vercel.app/api/process';
+
+    console.log("Forwarding text to receiver:", text);
 
     // Forward the text to the receiver
     const response = await fetch(receiverEndpoint, {
@@ -43,6 +48,9 @@ export async function POST(request: NextRequest) {
         { status: 502 }
       );
     }
+
+    console.log("Received response from receiver:", response.status);
+    console.log("now sending response back to sender");
 
     // Return the response from the receiver
     const responseData = await response.json();
