@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logger, getRequestId, resetRequestId } from '@/utils/logger';
+import { logger } from '@/utils/logger';
 
 /**
  * API route to forward a string to another project or endpoint
@@ -8,10 +8,6 @@ import { logger, getRequestId, resetRequestId } from '@/utils/logger';
  */
 export async function POST(request: NextRequest) {
   try {
-    // Generate a new request ID for this operation
-    resetRequestId();
-    const requestId = getRequestId();
-    
     // Parse the request body
     const body = await request.json();
     const { text, destination } = body;
@@ -45,11 +41,9 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Request-ID': getRequestId(), // Pass the request ID to the next service
       },
       body: JSON.stringify({ 
-        text,
-        requestId: getRequestId() // Include request ID in the payload too for older systems
+        text
       }),
     });
     

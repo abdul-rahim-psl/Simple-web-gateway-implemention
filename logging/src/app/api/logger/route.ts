@@ -6,7 +6,6 @@ interface LogEntry {
   level: 'info' | 'warn' | 'error' | 'debug';
   message: string;
   timestamp: string;
-  requestId?: string;
   metadata?: any;
 }
 
@@ -37,13 +36,11 @@ export async function POST(request: NextRequest) {
     
     console.log("")
     // Print log to console for demonstration
-    console.log(`[${body.timestamp}] [${body.service.toUpperCase()}] [${body.level.toUpperCase()}] ${body.message}`);
-    if (body.requestId) {
-      console.log(`  RequestID: ${body.requestId}`);
-    }
-    if (body.metadata) {
-      console.log(`  Metadata: ${JSON.stringify(body.metadata)}`);
-    }
+    console.log(` [${body.service.toUpperCase()}] [${body.level.toUpperCase()}] ${body.message}`);
+    
+    // if (body.metadata) {
+    //   console.log(`  Metadata: ${JSON.stringify(body.metadata)}`);
+    // }
     
     // Return success
     return NextResponse.json({ success: true });

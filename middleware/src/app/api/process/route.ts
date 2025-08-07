@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logger, setRequestId, getRequestId } from '@/utils/logger';
+import { logger } from '@/utils/logger';
 
 /**
  * API route to receive a text from sender and forward to receiver
  * POST /api/process
- * Body: { text: string, requestId?: string }
+ * Body: { text: string }
  */
 export async function POST(request: NextRequest) {
   try {
-    // Get requestId from header or generate a new one if not present
-    const requestIdHeader = request.headers.get('X-Request-ID');
-    if (requestIdHeader) {
-      setRequestId(requestIdHeader);
-    }
-    
     // Parse the request body
     const body = await request.json();
-    const { text, requestId: bodyRequestId } = body;
-    
-    // If requestId is in the body but not in the header, use that one
-    if (bodyRequestId && !requestIdHeader) {
-      setRequestId(bodyRequestId);
-    }
+    const { text } = body;
     
     await logger.info(`Middleware received text: "${text}"`, { textLength: text?.length });
 
@@ -47,11 +36,9 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Request-ID': getRequestId(), // Pass the request ID to the receiver
       },
       body: JSON.stringify({ 
-        text,
-        requestId: getRequestId() // Include request ID in the payload too
+        text
       }),
     });
 
