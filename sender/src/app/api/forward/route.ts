@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { text, destination } = body;
 
-    console.log("1. sender text:", text);
-    console.log("1. sender destination:", destination);
+    console.log("1. sender SENDING text:", text);
+    console.log(" ")
 
     // Validate required parameters
     if (!text) {
@@ -38,6 +38,17 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ text }),
     });
 
+    // Forward the string to the specified destination
+    const responseFromLogger = await fetch('http://localhost:3003/api/log', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text }),
+    });
+
+    
+
     // Check if the forward request was successful
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -54,6 +65,8 @@ export async function POST(request: NextRequest) {
     // Return the response from the destination
     const responseData = await response.json();
     console.log("Response from destination:", responseData);
+    console.log(" ")
+
     return NextResponse.json(responseData);
 
   } catch (error) {

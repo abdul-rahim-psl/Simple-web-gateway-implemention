@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
       : 'https://streaming-sxs4.vercel.app/api/process';
 
     console.log("Forwarding text to receiver:", text);
+    console.log(" ");
 
     // Forward the text to the receiver
     const response = await fetch(receiverEndpoint, {
@@ -49,8 +50,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("Received response from receiver:", response.status);
-    console.log("now sending response back to sender");
+    console.log("middleware: Received response from receiver:", response.status);
+    console.log(" ");
+
+    console.log("middleware: now sending response back to sender");
+    console.log(" ");
+
 
     // Return the response from the receiver
     const responseData = await response.json();
