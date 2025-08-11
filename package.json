@@ -1,0 +1,23 @@
+{
+  "name": "gateway-services",
+  "version": "1.0.0",
+  "description": "Gateway microservices orchestration",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:sender\" \"npm run dev:middleware\" \"npm run dev:receiver\" \"npm run dev:logging\"",
+    "dev:sender": "cd sender && npm run dev -- --port 3000",
+    "dev:middleware": "cd middleware && npm run dev -- --port 3001",
+    "dev:receiver": "cd receiver && npm run dev -- --port 3002",
+    "dev:logging": "cd logging && npm run dev -- --port 3003",
+    "install:all": "npm install && cd sender && npm install && cd ../middleware && npm install && cd ../receiver && npm install && cd ../logging && npm install",
+    "build:all": "cd sender && npm run build && cd ../middleware && npm run build && cd ../receiver && npm run build && cd ../logging && npm run build",
+    "start:all": "concurrently \"npm run start:sender\" \"npm run start:middleware\" \"npm run start:receiver\" \"npm run start:logging\"",
+    "start:sender": "cd sender && npm run start -- --port 3000",
+    "start:middleware": "cd middleware && npm run start -- --port 3001",
+    "start:receiver": "cd receiver && npm run start -- --port 3002",
+    "start:logging": "cd logging && npm run start -- --port 3003"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
